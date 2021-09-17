@@ -1,12 +1,13 @@
 // import 'dart:html';
 
-import 'dart:ffi';
+// import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'MsgPage/MsgPage.dart';
 import 'ContactPage/ContactPage.dart';
 import 'LifePage/LifePage.dart';
 import 'PersonPage/PersonPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ScaffoldRoute extends StatefulWidget {
   ScaffoldRoute({Key? key, this.index = 0}) : super(key: key);
@@ -57,7 +58,8 @@ class _ScaffoldRouteState extends State<ScaffoldRoute> {
   ];
 
   final pages = [MsgPage(), ContactPage(), LifePage(), PersonPage()];
-  final titles = [Text("Messages"), Text("Contacts"), Text("Life"), Text("Me")];
+  final titles = ["Messages", "Contacts", "Life", "Me"];
+  // final titles = [Text("Messages"), Text("Contacts"), Text("Life"), Text("Me")];
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +70,23 @@ class _ScaffoldRouteState extends State<ScaffoldRoute> {
         backgroundColor: Color.fromRGBO(248, 246, 241, 1),
         appBar: AppBar(
           //顶部导航栏
-          title: titles[_selectedIndex],
+          title: Text(
+            titles[_selectedIndex],
+            style: GoogleFonts.cuprum(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+          // title: titles[_selectedIndex],
           centerTitle: true,
           backgroundColor: Color.fromRGBO(117, 204, 164, 1),
           elevation: 2,
-          // actions: <Widget>[
-          //   //导航栏右侧菜单
-          //   IconButton(icon: Icon(Icons.share), onPressed: () {}),
-          // ],
+          actions: _selectedIndex == 1
+              ? <Widget>[
+                  //导航栏右侧菜单
+                  IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                ]
+              : <Widget>[],
         ),
         // drawer: new MyDrawer(), //抽屉
         bottomNavigationBar: BottomNavigationBar(

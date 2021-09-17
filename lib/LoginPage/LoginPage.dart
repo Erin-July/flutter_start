@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../app.dart';
 import 'CertiPage.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -10,7 +16,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  GlobalKey<FormState> _formKey1 = new GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey2 = new GlobalKey<FormState>();
   bool passwordVisible = false;
+  String? _phoneNumber = "";
+  String? _passWord = "";
+  int _code = -2;
+  String _codeMsg = "";
 
   @override
   void initState() {
@@ -23,36 +35,52 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          TextField(
-            // obscureText: false,
-            decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.person,
-                  color: Colors.grey.shade400,
-                ),
-                hintText: '请输入手机号！',
-                hintStyle: TextStyle(
-                    fontSize: 12, color: Color.fromRGBO(119, 119, 119, 1)),
-                // border: OutlineInputBorder(
-                //     borderRadius: BorderRadius.all(Radius.circular(10)),
-                //     borderSide: BorderSide(color: Colors.red, width: 5.0)),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 91, 91, 1),
-                    width: 2.0,
+          Form(
+            key: _formKey1,
+            child: TextFormField(
+              // obscureText: false,
+              decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.person,
+                    color: Colors.grey.shade400,
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 91, 91, 1),
-                    width: 2.0,
+                  hintText: '请输入手机号！',
+                  hintStyle: TextStyle(
+                      fontSize: 12, color: Color.fromRGBO(119, 119, 119, 1)),
+                  // border: OutlineInputBorder(
+                  //     borderRadius: BorderRadius.all(Radius.circular(10)),
+                  //     borderSide: BorderSide(color: Colors.red, width: 5.0)),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                      width: 2.0,
+                    ),
                   ),
-                ),
-                fillColor: Colors.white,
-                filled: true),
-          ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                      width: 2.0,
+                    ),
+                  ),
+                  fillColor: Colors.white,
+                  filled: true),
+              validator: (String? val) {
+                if (val != null) {
+                  if (!RegExp(
+                          r"^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$")
+                      .hasMatch(val)) {
+                    return "手机号格式不正确";
+                  } else
+                    return null;
+                }
+              },
+              onSaved: (String? val) {
+                _phoneNumber = val;
+              },
+            ),
+          )
         ],
       ),
     );
@@ -64,46 +92,58 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          TextField(
-            obscureText: !passwordVisible,
-            decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.vpn_key,
-                  color: Colors.grey.shade400,
-                  size: 20,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    //根据passwordVisible状态显示不同的图标
-                    passwordVisible ? Icons.visibility : Icons.visibility_off,
+          Form(
+            key: _formKey2,
+            child: TextFormField(
+              obscureText: !passwordVisible,
+              decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.vpn_key,
                     color: Colors.grey.shade400,
+                    size: 20,
                   ),
-                  onPressed: () {
-                    //更新状态控制密码显示或隐藏
-                    setState(() {
-                      passwordVisible = !passwordVisible;
-                    });
-                  },
-                ),
-                hintText: '请输入你密码！我不偷看哦~',
-                hintStyle: TextStyle(
-                    fontSize: 12, color: Color.fromRGBO(119, 119, 119, 1)),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 91, 91, 1),
-                    width: 2.0,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      //根据passwordVisible状态显示不同的图标
+                      passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey.shade400,
+                    ),
+                    onPressed: () {
+                      //更新状态控制密码显示或隐藏
+                      setState(() {
+                        passwordVisible = !passwordVisible;
+                      });
+                    },
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 91, 91, 1),
-                    width: 2.0,
+                  hintText: '请输入你密码！我不偷看哦~',
+                  hintStyle: TextStyle(
+                      fontSize: 12, color: Color.fromRGBO(119, 119, 119, 1)),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                      width: 2.0,
+                    ),
                   ),
-                ),
-                fillColor: Colors.white,
-                filled: true),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                      width: 2.0,
+                    ),
+                  ),
+                  fillColor: Colors.white,
+                  filled: true),
+              validator: (String? val) {
+                if (val != null) {
+                  return (val.length < 6 || val.length > 25) ? "密码长度错误" : null;
+                } else
+                  return null;
+              },
+              onSaved: (String? val) {
+                _passWord = val;
+              },
+            ),
           )
         ],
       ),
@@ -119,16 +159,103 @@ class _LoginPageState extends State<LoginPage> {
   //   );
   // }
 
-  Widget _submitButton(String title) {
-    return InkWell(
-      onTap: () {
-        if (title == 'Login') {
+  String generate_MD5(String data) {
+    var content = new Utf8Encoder().convert(data);
+    var digest = md5.convert(content);
+    // 这里其实就是 digest.toString()
+    return hex.encode(digest.bytes);
+  }
+
+  _getLogin() async {
+    var timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    var _pwd = _passWord;
+    var newToken;
+    if (_pwd != null) {
+      newToken = generate_MD5(timestamp.toString() + _pwd);
+    }
+    var httpClient = new HttpClient();
+    var url = new Uri.http('175.27.189.9', '/user/loginByPwd', {
+      'id': _phoneNumber,
+      'timestamp': timestamp.toString(),
+      'token': newToken
+    });
+    // String result;
+    // String token = "";
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+
+    if (response.statusCode == HttpStatus.ok) {
+      var json = await utf8.decoder.bind(response).join();
+      var data = jsonDecode(json);
+      _codeMsg = data['msg'];
+      _code = data['code'];
+      print(data);
+      // print(token);
+    } else {
+      _codeMsg = 'Error:\nHttp status ${response.statusCode}';
+    }
+
+    return _code;
+    // If the widget was removed from the tree while the message was in flight,
+    // we want to discard the reply rather than calling setState to update our
+    // non-existent appearance.
+    // if (!mounted) return;
+
+    // setState(() {
+    //   // _isCodeTrue = result;
+    //   // _token = token;
+    // });
+  }
+
+  void _forSubmitted() async {
+    print('&&&&&');
+    var _form1 = _formKey1.currentState;
+    var _form2 = _formKey2.currentState;
+    print(_form1);
+    print(_form2);
+    if (_form1 != null && _form2 != null) {
+      _form1.save();
+      _form2.save();
+      print(_form1);
+      print(_form2);
+      if (_form1.validate() && _form2.validate()) {
+        _code = await _getLogin();
+        if (_code == 0) {
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => ScaffoldRoute(
                         index: 0,
                       )));
+        } else if (_code == 1) {
+          Fluttertoast.showToast(
+              msg: "用户名或密码错误",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black45,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        } else {
+          Fluttertoast.showToast(
+              msg: _codeMsg,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black45,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+      }
+    }
+  }
+
+  Widget _submitButton(String title) {
+    return InkWell(
+      onTap: () {
+        if (title == 'Login') {
+          print('****');
+          _forSubmitted();
         } else if (title == 'Register') {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CertiPage()));
@@ -229,7 +356,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 30),
               _submitButton('Login'),
-              SizedBox(height: height * .15),
+              SizedBox(height: height * .13),
               _divider(),
               _submitButton('Register'),
             ],

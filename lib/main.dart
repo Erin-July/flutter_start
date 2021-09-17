@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:startup_namer/LoginPage/LoginPage.dart';
 // import 'package:english_words/english_words.dart';
 import 'app.dart';
+import 'http.dart';
+import 'SnackBarPage.dart';
 
 // void main() => runApp(new ScaffoldRoute());
+// void main() => runApp(new HttpPage());
+// void main() => runApp(new SnackBarPage());
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {

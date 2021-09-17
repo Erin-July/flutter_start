@@ -53,14 +53,14 @@ class _CertiPageState extends State<CertiPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                   borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 91, 91, 1),
+                    color: Colors.white,
                     width: 2.0,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                   borderSide: BorderSide(
-                    color: Color.fromRGBO(91, 91, 91, 1),
+                    color: Colors.white,
                     width: 2.0,
                   ),
                 ),
@@ -92,14 +92,14 @@ class _CertiPageState extends State<CertiPage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                     borderSide: BorderSide(
-                      color: Color.fromRGBO(91, 91, 91, 1),
+                      color: Colors.white,
                       width: 2.0,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                     borderSide: BorderSide(
-                      color: Color.fromRGBO(91, 91, 91, 1),
+                      color: Colors.white,
                       width: 2.0,
                     ),
                   ),
@@ -130,14 +130,14 @@ class _CertiPageState extends State<CertiPage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                     borderSide: BorderSide(
-                      color: Color.fromRGBO(91, 91, 91, 1),
+                      color: Colors.white,
                       width: 2.0,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                     borderSide: BorderSide(
-                      color: Color.fromRGBO(91, 91, 91, 1),
+                      color: Colors.white,
                       width: 2.0,
                     ),
                   ),

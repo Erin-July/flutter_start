@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'InfoPage.dart';
 
 class ContactPage extends StatelessWidget {
   @override
