@@ -3,19 +3,152 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:date_format/date_format.dart';
+import 'dart:typed_data';
+import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class InfoPage extends StatefulWidget {
-  const InfoPage({Key? key}) : super(key: key);
+  const InfoPage({Key? key, this.id = "123456789", this.token = ""})
+      : super(key: key);
+  final String? id;
+  final String token;
   @override
   _InfoPageState createState() => _InfoPageState();
 }
 
 class _InfoPageState extends State<InfoPage> {
   String _keyword = 'inver';
-  int? sex = 0;
-  DateTime _selectedDate = DateTime.now();
+  int? sex = 2;
+  DateTime _selectedDate = DateTime.utc(2000, 1, 1);
+
+  Image _avatar = Image.asset('assets/images/tx.jpg');
+  String _avatarMsg = "";
+  String _infoMsg = "";
+  int _infoCode = -1;
+  late String _id = widget.id.toString();
+  late String _token = widget.token;
+  var _info = {};
+  // var _info = {};
+  int _birthY = 2000, _birthM = 1, _birthD = 1;
+
+  void init() async {
+    await _getAvatar();
+    await _getInfo();
+    if (_avatarMsg != "") {
+      Fluttertoast.showToast(
+          msg: _avatarMsg,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black45,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+    if (_infoMsg != "OK" || _infoCode == 2) {
+      Fluttertoast.showToast(
+          msg: _infoMsg,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black45,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+    // print(_avatarMsg);
+    // print(_infoMsg);
+    // print(_info);
+    if (_avatarMsg == "" && _infoMsg == "OK") {
+      print("**");
+      print(_info);
+      String _birth = (_info['data']['birth']);
+      _birthY = int.parse(_birth.split('-')[0]);
+      _birthM = int.parse(_birth.split('-')[1]);
+      _birthD = int.parse(_birth.split('-')[2]);
+      _selectedDate = DateTime.utc(_birthY, _birthM, _birthD);
+      sex = _info['data']['gender'];
+      _keyword = _info['data']['nickname'];
+      print(_selectedDate);
+      print(sex);
+      print(_keyword);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // _getAvatar();
+    // _getInfo();
+    init();
+    print(widget.id);
+    print(widget.token);
+  }
+
+  _getAvatar() async {
+    var httpClient = new HttpClient();
+    var url = new Uri.http('175.27.189.9', '/user/getAvatar', {'id': _id});
+    String result = "";
+    Image image = Image.asset('assets/images/tx.jpg');
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+      image = Image.memory(bytes);
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      _avatar = image;
+      _avatarMsg = result;
+    });
+  }
+
+  _getInfo() async {
+    var httpClient = new HttpClient();
+    var url = new Uri.http('175.27.189.9', '/user/getInfo', {'id': _id});
+    String result = "";
+    var data = {};
+    var code = -1;
+    // String token = "";
+    // Image image = Image.asset('assets/images/hxy.bmp');
+    // Image image;
+    // Uint8List _image;
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    // print('***');
+    // print(response.statusCode);
+    if (response.statusCode == HttpStatus.ok) {
+      // print('***');
+      // Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+      // print(bytes);
+      // image = Image.memory(bytes);
+      var json = await utf8.decoder.bind(response).join();
+      data = jsonDecode(json);
+      code = data['code'];
+      result = data['msg'];
+      // result = data['msg'];
+      // token = data['data']['token'];
+      // print(result);
+      // print(data);
+      // print(token);
+      // return bytes;
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      _info = data;
+      _infoMsg = result;
+      _infoCode = code;
+    });
+    // return image;
+  }
 
   Future<void> _setDate() async {
+    print(_selectedDate);
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -141,11 +274,27 @@ class _InfoPageState extends State<InfoPage> {
           ),
           Container(
             margin: EdgeInsets.symmetric(
-              horizontal: 20,
+              horizontal: 5,
             ),
             // width: 200,
             child: Row(
               children: <Widget>[
+                Flexible(
+                  child: RadioListTile(
+                    value: 0,
+                    onChanged: (int? value) {
+                      setState(() {
+                        this.sex = value;
+                      });
+                    },
+                    groupValue: this.sex,
+                    secondary: Icon(
+                      Icons.male,
+                      color: Colors.blue.shade600,
+                    ),
+                    selected: this.sex == 0,
+                  ),
+                ),
                 Flexible(
                   child: RadioListTile(
                     value: 1,
@@ -156,8 +305,8 @@ class _InfoPageState extends State<InfoPage> {
                     },
                     groupValue: this.sex,
                     secondary: Icon(
-                      Icons.male,
-                      color: Colors.blue.shade600,
+                      Icons.female,
+                      color: Colors.pink.shade300,
                     ),
                     selected: this.sex == 1,
                   ),
@@ -172,26 +321,10 @@ class _InfoPageState extends State<InfoPage> {
                     },
                     groupValue: this.sex,
                     secondary: Icon(
-                      Icons.female,
-                      color: Colors.pink.shade300,
-                    ),
-                    selected: this.sex == 2,
-                  ),
-                ),
-                Flexible(
-                  child: RadioListTile(
-                    value: 0,
-                    onChanged: (int? value) {
-                      setState(() {
-                        this.sex = value;
-                      });
-                    },
-                    groupValue: this.sex,
-                    secondary: Icon(
                       Icons.visibility_off,
                       color: Colors.grey.shade700,
                     ),
-                    selected: this.sex == 0,
+                    selected: this.sex == 2,
                   ),
                 ),
               ],
@@ -346,7 +479,7 @@ class _InfoPageState extends State<InfoPage> {
                       width: 80,
                       height: 80,
                       child: ClipOval(
-                        child: Image.asset('assets/images/hxy.bmp'),
+                        child: _avatar,
                       ),
                     ),
                     // _divider(),

@@ -4,6 +4,9 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HttpPage extends StatefulWidget {
   HttpPage({Key? key}) : super(key: key);
@@ -13,13 +16,15 @@ class HttpPage extends StatefulWidget {
 
 class _HttpPageState extends State<HttpPage> {
 //   late IO.Socket channel;
+  // late Image image;
+  Image image = Image.asset('assets/images/upp.png');
+  @override
+  void initState() {
+    super.initState();
 
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     _listenWebSocket();
-//   }
+    // image = _getInfo();
+    _getInfo();
+  }
 
 //   void _listenWebSocket() async {
 //     // 构建请求头，可以放一些cookie等信息，这里加上了origin，因为服务端有origin校验
@@ -268,6 +273,43 @@ class _HttpPageState extends State<HttpPage> {
     });
   }
 
+  _getInfo() async {
+    var httpClient = new HttpClient();
+    var url =
+        new Uri.http('175.27.189.9', '/user/getAvatar', {'id': "18822197739"});
+    String result;
+    String token = "";
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    print('***');
+    print(response.statusCode);
+    if (response.statusCode == HttpStatus.ok) {
+      print('***');
+      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+      image = Image.memory(bytes);
+      // var json = await base64.decoder.bind(response).join();
+      // var data = jsonDecode(json);
+      // result = data['msg'];
+      // token = data['data']['token'];
+      print('***');
+      print(bytes);
+      // print(token);
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+
+    return image;
+    // If the widget was removed from the tree while the message was in flight,
+    // we want to discard the reply rather than calling setState to update our
+    // non-existent appearance.
+    // if (!mounted) return;
+
+    // setState(() {
+    //   _isCodeTrue = result;
+    //   _token = token;
+    // });
+  }
+
   // _postSetTags() async {
   //   var timestamp = DateTime.now().millisecondsSinceEpoch;
   //   var httpClient = new HttpClient();
@@ -315,7 +357,7 @@ class _HttpPageState extends State<HttpPage> {
             // get();
             // _getAckCode();
             // _postRegister();
-            _getLogin();
+            _getInfo();
             // _postSetTags();
             // print(_isCodeTrue);
             // print(timestamp);
@@ -333,16 +375,19 @@ class _HttpPageState extends State<HttpPage> {
             // print('qwq');
           },
         ),
-        body: ListView.builder(
-          // 滚动控制器
-          controller: this._scrollController,
-          itemCount: this.messageList.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text("${this.messageList[index]}"),
-            );
-          },
+        body: Container(
+          child: image,
         ),
+        // ListView.builder(
+        //   // 滚动控制器
+        //   controller: this._scrollController,
+        //   itemCount: this.messageList.length,
+        //   itemBuilder: (context, index) {
+        //     return ListTile(
+        //       title: Text("${this.messageList[index]}"),
+        // );
+        // },
+        // ),
       ),
     );
   }

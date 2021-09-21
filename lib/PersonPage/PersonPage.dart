@@ -2,20 +2,82 @@ import 'package:flutter/material.dart';
 import 'InfoPage.dart';
 import 'SetPage.dart';
 import 'TagPage.dart';
+import 'dart:typed_data';
+import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PersonPage extends StatefulWidget {
-  const PersonPage({Key? key}) : super(key: key);
-
+  const PersonPage({Key? key, this.id = "123456789", this.token = ""})
+      : super(key: key);
+  final String? id;
+  final String token;
   @override
   _PersonPageState createState() => _PersonPageState();
 }
 
 class _PersonPageState extends State<PersonPage> {
+  // late Image _avatar;
+  Image _avatar = Image.asset('assets/images/tx.jpg');
+  String _avatarMsg = "";
+  late String _id = widget.id.toString().substring(7, 11);
+  late String _token = widget.token;
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.id);
+    print(widget.token);
+    _getAvatar();
+    if (_avatarMsg != "") {
+      Fluttertoast.showToast(
+          msg: _avatarMsg,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black45,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
+  _getAvatar() async {
+    var httpClient = new HttpClient();
+    var url =
+        new Uri.http('175.27.189.9', '/user/getAvatar', {'id': widget.id});
+    String result = "";
+    Image image = Image.asset('assets/images/tx.jpg');
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+      // print(bytes);
+      if (bytes.isNotEmpty)
+        image = Image.memory(bytes);
+      else
+        result = 'Error';
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      _avatar = image;
+      _avatarMsg = result;
+    });
+  }
+
   Widget _infoField() {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => InfoPage()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => InfoPage(
+                      id: widget.id,
+                      token: _token,
+                    )));
       },
       child: Container(
         margin: EdgeInsets.only(left: 40, right: 30),
@@ -25,7 +87,7 @@ class _PersonPageState extends State<PersonPage> {
               width: 70,
               height: 70,
               child: ClipOval(
-                child: Image.asset('assets/images/hxy.bmp'),
+                child: _avatar,
               ),
             ),
             Container(
@@ -36,7 +98,7 @@ class _PersonPageState extends State<PersonPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   new Text(
-                    'inver',
+                    _id,
                     style: TextStyle(
                       color: Colors.grey.shade800,
                       fontSize: 26.0,
@@ -44,7 +106,7 @@ class _PersonPageState extends State<PersonPage> {
                     ),
                   ),
                   new Text(
-                    '真实姓名：黄*雨',
+                    '真实姓名：海*棠',
                     style: TextStyle(
                       color: Colors.grey.shade700,
                       fontSize: 12.0,

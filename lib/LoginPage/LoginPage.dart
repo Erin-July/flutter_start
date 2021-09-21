@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   String? _passWord = "";
   int _code = -2;
   String _codeMsg = "";
-
+  String _token = "";
   @override
   void initState() {
     passwordVisible = false; //设置初始状态
@@ -39,6 +39,8 @@ class _LoginPageState extends State<LoginPage> {
             key: _formKey1,
             child: TextFormField(
               // obscureText: false,
+              keyboardType: TextInputType.phone,
+              inputFormatters: [LengthLimitingTextInputFormatter(11)],
               decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.person,
@@ -170,6 +172,7 @@ class _LoginPageState extends State<LoginPage> {
     var timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     var _pwd = _passWord;
     var newToken;
+    var token;
     if (_pwd != null) {
       newToken = generate_MD5(timestamp.toString() + _pwd);
     }
@@ -189,35 +192,36 @@ class _LoginPageState extends State<LoginPage> {
       var data = jsonDecode(json);
       _codeMsg = data['msg'];
       _code = data['code'];
+      token = data['data']['token'];
       print(data);
       // print(token);
     } else {
       _codeMsg = 'Error:\nHttp status ${response.statusCode}';
     }
 
-    return _code;
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
     // if (!mounted) return;
 
-    // setState(() {
-    //   // _isCodeTrue = result;
-    //   // _token = token;
-    // });
+    setState(() {
+      // _isCodeTrue = result;
+      _token = token;
+    });
+    return _code;
   }
 
   void _forSubmitted() async {
-    print('&&&&&');
+    // print('&&&&&');
     var _form1 = _formKey1.currentState;
     var _form2 = _formKey2.currentState;
-    print(_form1);
-    print(_form2);
+    // print(_form1);
+    // print(_form2);
     if (_form1 != null && _form2 != null) {
       _form1.save();
       _form2.save();
-      print(_form1);
-      print(_form2);
+      // print(_form1);
+      // print(_form2);
       if (_form1.validate() && _form2.validate()) {
         _code = await _getLogin();
         if (_code == 0) {
@@ -225,8 +229,7 @@ class _LoginPageState extends State<LoginPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => ScaffoldRoute(
-                        index: 0,
-                      )));
+                      index: 0, token: _token, id: _phoneNumber)));
         } else if (_code == 1) {
           Fluttertoast.showToast(
               msg: "用户名或密码错误",
@@ -254,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
     return InkWell(
       onTap: () {
         if (title == 'Login') {
-          print('****');
+          // print('****');
           _forSubmitted();
         } else if (title == 'Register') {
           Navigator.push(

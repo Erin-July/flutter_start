@@ -10,14 +10,27 @@ import 'PersonPage/PersonPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ScaffoldRoute extends StatefulWidget {
-  ScaffoldRoute({Key? key, this.index = 0}) : super(key: key);
+  ScaffoldRoute(
+      {Key? key, this.index = 0, this.id = "123456789", this.token = ""})
+      : super(key: key);
   final int index;
+  final String? id;
+  final String token;
   @override
   _ScaffoldRouteState createState() => new _ScaffoldRouteState();
 }
 
 class _ScaffoldRouteState extends State<ScaffoldRoute> {
+  @override
+  void initState() {
+    super.initState();
+    print(widget.id);
+    print(widget.token);
+  }
+
   late int _selectedIndex = widget.index;
+  late String? _id = widget.id;
+  late String _token = widget.token;
   final List<BottomNavigationBarItem> bottomNavItems = [
     BottomNavigationBarItem(
       icon: Icon(Icons.textsms),
@@ -57,7 +70,12 @@ class _ScaffoldRouteState extends State<ScaffoldRoute> {
     ),
   ];
 
-  final pages = [MsgPage(), ContactPage(), LifePage(), PersonPage()];
+  late final pages = [
+    MsgPage(),
+    ContactPage(),
+    LifePage(),
+    PersonPage(id: _id, token: _token)
+  ];
   final titles = ["Messages", "Contacts", "Life", "Me"];
   // final titles = [Text("Messages"), Text("Contacts"), Text("Life"), Text("Me")];
 
