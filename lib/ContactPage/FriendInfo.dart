@@ -1,76 +1,152 @@
 import 'package:flutter/material.dart';
-import 'package:startup_namer/MsgPage/ChatPage.dart';
-import 'dart:convert';
-import 'dart:io';
+
 
 class FriendInfo extends StatefulWidget {
+  const FriendInfo({Key? key}) : super(key: key);
+
   @override
-  FriendInfoState createState() {
-    return FriendInfoState();
-  }
+  FriendInfoState createState() => FriendInfoState();
 }
 
 class FriendInfoState extends State<FriendInfo> {
-  var _friendInfo = 0;
+  Widget _infoField() {
+    return Container(
+      child: Container(
+        margin: EdgeInsets.only(left: 40, right: 30),
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 70,
+              height: 70,
+              child: ClipOval(
+                child: Image.asset('assets/images/logo.png'),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 40),
+              height: 50,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Text(
+                    'xxx',
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 26.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  new Text(
+                    '姓名：***',
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
+      ),
+    );
+  }
 
-  _getFriendInfo() async {
-    // var url = new Uri.http('175.27.189.9','/common/getInfo');
-    var url = new Uri.http('175.27.189.9','/contacts/getList',{'id':'18822197739','timestamp':new DateTime.now().millisecondsSinceEpoch});
-    var httpClient = new HttpClient();
-    int result;
-      var request = await httpClient.getUrl(url);
-      var response = await request.close();
-      print(response.statusCode);
-      if (response.statusCode == HttpStatus.ok) {
-        var json = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(json);
-        print(data);
-        result = data["data"]["timestamp"];
-      } else {
-        result = -1;
-      }
+  Widget _tag(String title) {
+    return Container(
+      height: 28,
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      margin: EdgeInsets.only(left: 10),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        // border: Border.all(color: Colors.grey, width: 1.0),
+        borderRadius: BorderRadius.circular(20.0),
+        color: Color.fromRGBO(249, 217, 142, 1),
+      ),
+      child: Text(
+        title,
+        style: TextStyle(
+            fontSize: 14,
+            color: Color.fromRGBO(248, 246, 241, 1),
+            fontWeight: FontWeight.w600),
+      ),
+    );
+  }
 
-    // If the widget was removed from the tree while the message was in flight,
-    // we want to discard the reply rather than calling setState to update our
-    // non-existent appearance.
-    if (!mounted) return;
+  Widget _tagField() {
+    return InkWell(
+      child: Container(
+        margin: EdgeInsets.only(left: 40, right: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Icon(
+              Icons.style_outlined,
+              color: Colors.grey.shade600,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              '标签',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            _tag('K歌之王'),
+            Spacer(),
+          ],
+        ),
+      ),
+    );
+  }
 
-    setState(() {
-      _friendInfo = result;
-    });
+  Widget _divider() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 30),
+        child: Divider(
+          thickness: 1,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          backgroundColor: Color.fromRGBO(248, 246, 241, 1),
-          //顶部导航栏
-          //返回上一页
-          body: Column(
-            children: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              new Text('$_friendInfo.'),
-              new RaisedButton(
-                onPressed: _getFriendInfo,
-                child: new Text('Get friend info'),
+    // return Container();
+    return Container(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            // padding: EdgeInsets.symmetric(horizontal: 40),
+            margin: EdgeInsets.symmetric(vertical: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                  _infoField(),
+                  _divider(),
+                  _tagField(),
+                  _divider(),
+                  TextButton(onPressed: () {}, child: Text('发消息')),
+                  TextButton(onPressed: () {}, child: Text('删除好友')),
+                ],
               ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        new MaterialPageRoute(builder: (context) {
-                      return ChatPage();
-                    }));
-                  },
-                  // color: Colors.green,
-                  child: Text("to ChatPage"))
-            ],
-          )),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

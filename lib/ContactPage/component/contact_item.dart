@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:startup_namer/ContactPage/FriendInfo.dart';
+import '../FriendInfo.dart';
 import './contact_vo.dart';
 
 class ContactItem extends StatelessWidget {
@@ -19,9 +19,10 @@ class ContactItem extends StatelessWidget {
               Border(bottom: BorderSide(width: 0.5, color: Color(0xffd9d9d9)))),
       height: 50.0,
       child: TextButton(
-
-        onPressed: () {Navigator.push(context,
-            MaterialPageRoute(builder: (context) => FriendInfo()));},
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => FriendInfo()));
+        },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[

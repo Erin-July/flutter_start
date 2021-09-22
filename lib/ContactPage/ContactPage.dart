@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:startup_namer/ContactPage/NewFriends.dart';
+import 'NewFriends.dart';
 import 'component/SearchField.dart';
 import 'component/contact_sider_list.dart';
 import 'component/contact_item.dart';
 import 'component/contact_vo.dart';
 
 class ContactPage extends StatefulWidget {
-  ContactPage({Key? key}) : super(key: key);
-
-  _ContactPageState createState() => _ContactPageState();
+  @override
+  ContactPageState createState() {
+    return ContactPageState();
+  }
 }
 
-class _ContactPageState extends State<ContactPage> {
+class ContactPageState extends State<ContactPage> {
   final items = new List<String>.generate(100, (i) => "Item $i");
 
   @override

@@ -28,10 +28,11 @@ class AddFriendState extends State<AddFriend> {
             backgroundColor: Color.fromRGBO(117, 204, 164, 1),
             elevation: 2,
           ),
-          body: Container(height: 60, width: 400,
+          body: Container(
+              height: 60,
+              width: 400,
               color: Color.fromRGBO(248, 246, 241, 1),
-              child: SearchWidget(
-              ))),
+              child: SearchWidget())),
     );
   }
 }

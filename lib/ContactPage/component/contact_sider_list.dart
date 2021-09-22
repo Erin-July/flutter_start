@@ -60,11 +60,11 @@ class ContactState extends State<ContactSiderList> {
                   alignment: Alignment.centerLeft,
                   child: Column(
                     children: <Widget>[
-                      //用Offstage组件控制是否显示英文字母
-                      // Offstage(
-                      //   offstage: _shouldShowHeader(index),
-                      //   child: widget.sectionBuilder(context, index),
-                      // ),
+                      // 用Offstage组件控制是否显示英文字母
+                      Offstage(
+                        offstage: _shouldShowHeader(index),
+                        child: widget.sectionBuilder(context, index),
+                      ),
                       //显示列表项
                       Column(
                         children: <Widget>[widget.itemBuilder(context, index)],

@@ -3,6 +3,7 @@
 // import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:startup_namer/ContactPage/AddFriend.dart';
 import 'MsgPage/MsgPage.dart';
 import 'ContactPage/ContactPage.dart';
 import 'LifePage/LifePage.dart';
@@ -102,7 +103,14 @@ class _ScaffoldRouteState extends State<ScaffoldRoute> {
           actions: _selectedIndex == 1
               ? <Widget>[
                   //导航栏右侧菜单
-                  IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                  IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddFriend()));
+                      }),
                 ]
               : <Widget>[],
         ),
