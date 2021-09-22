@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:startup_namer/Global.dart';
 import '../PersonPage/PersonPage.dart';
 import '../app.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 
 class RegisterPage extends StatefulWidget {
   /// 用户点击时的回调函数。
@@ -39,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _passWord = "";
   String? _ackPassWord = "";
   String? _codeMsg = "";
-  String _token = "";
+  // String _token = "";
   String _passCodeMsg = "";
   int _passCode = -2;
   int _isCodeTrue = -1;
@@ -101,8 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (response.statusCode == HttpStatus.ok) {
         var json = await utf8.decoder.bind(response).join();
         var data = jsonDecode(json);
-
-        result = await data;
+        result = data;
         print(data);
       } else {
         result = 'Error:\nHttp status ${response.statusCode}';
@@ -125,7 +127,9 @@ class _RegisterPageState extends State<RegisterPage> {
     var httpClient = new HttpClient();
     var url = new Uri.http(
         '175.27.189.9', '/user/login', {'id': _phoneNumber, 'code': _ackCode});
-    // String result;
+    String result;
+    String token = "";
+    int isCodeTrue = -1;
     // int _code = 1;
     var request = await httpClient.getUrl(url);
     var response = await request.close();
@@ -135,12 +139,12 @@ class _RegisterPageState extends State<RegisterPage> {
       var data = jsonDecode(json);
       // _code = data['code'];
       // result = data['msg'];
-      _codeMsg = data['msg'];
-      _token = data['data']['token'];
-      _isCodeTrue = data['code'];
+      result = data['msg'];
+      token = data['data']['token'];
+      isCodeTrue = data['code'];
       print(data);
     } else {
-      _codeMsg = 'Error:\nHttp status ${response.statusCode}';
+      result = 'Error:\nHttp status ${response.statusCode}';
     }
 
     // return _token;
@@ -149,10 +153,12 @@ class _RegisterPageState extends State<RegisterPage> {
     // non-existent appearance.
     if (!mounted) return;
 
-    // setState(() {
-    //   _codeMsg = result;
-    //   _isCodeTrue = _code;
-    // });
+    setState(() {
+      _codeMsg = result;
+      _isCodeTrue = isCodeTrue;
+      Global.token = token;
+      Global.phoneNumber = _phoneNumber.toString();
+    });
   }
 
   String generate_MD5(String data) {
@@ -163,10 +169,10 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   _postRegister() async {
-    print('_token:' + _token);
+    print('_token:' + Global.token);
     var timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     var httpClient = new HttpClient();
-    var newToken = generate_MD5(timestamp.toString() + _token);
+    var newToken = generate_MD5(timestamp.toString() + Global.token);
     var url = new Uri.http('175.27.189.9', '/user/newPwd');
     var request = await httpClient.postUrl(url);
 
@@ -200,10 +206,61 @@ class _RegisterPageState extends State<RegisterPage> {
     // non-existent appearance.
     if (!mounted) return;
 
-    // setState(() {
-    //   // _codeMsg = result;
-    //   // _isCodeTrue = _code;
-    // });
+    setState(() {
+      // _codeMsg = result;
+      // _isCodeTrue = _code;
+    });
+  }
+
+  _getAvatar() async {
+    var httpClient = new HttpClient();
+    var url = new Uri.http(
+        '175.27.189.9', '/user/getAvatar', {'id': Global.phoneNumber});
+    String result = "";
+    Image image = Image.asset('assets/images/tx.jpg');
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+      image = Image.memory(bytes);
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      Global.avatar = image;
+      Global.avatarMsg = result;
+    });
+  }
+
+  _getInfo() async {
+    var httpClient = new HttpClient();
+    var url = new Uri.http(
+        '175.27.189.9', '/user/getInfo', {'id': Global.phoneNumber});
+    String result = "";
+    var data = {};
+    var code = -1;
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      var json = await utf8.decoder.bind(response).join();
+      data = jsonDecode(json);
+      code = data['code'];
+      result = data['msg'];
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      if (code == 0) {
+        Global.birth = data['data']['birth'];
+        Global.gender = data['data']['gender'];
+        Global.nickname = data['data']['nickname'];
+        Global.tag = data['data']['tag'];
+      } else {
+        Global.infoMsg = result;
+      }
+    });
   }
 
   Widget _backButton() {
@@ -529,12 +586,12 @@ class _RegisterPageState extends State<RegisterPage> {
       _form2.save();
       _form3.save();
       _form4.save();
-      print(_token);
+      print(Global.token);
       await _getAckCode();
       print('**********');
       print(_codeMsg);
       print(_isCodeTrue);
-      print(_token);
+      print(Global.token);
       if (_isCodeTrue != 0) {
         Fluttertoast.showToast(
             msg: _codeMsg,
@@ -546,11 +603,13 @@ class _RegisterPageState extends State<RegisterPage> {
             fontSize: 16.0);
       } else {
         if (_form3.validate() && _form4.validate()) {
-          print(_token);
+          print(Global.token);
           await _postRegister();
           print('_passcode');
           print(_passCode);
           if (_passCode == 0) {
+            _getAvatar();
+            _getInfo();
             Navigator.push(
               context,
               MaterialPageRoute(

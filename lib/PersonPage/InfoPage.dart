@@ -1,5 +1,5 @@
 // import 'dart:ffi';
-
+import 'package:startup_namer/Global.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:date_format/date_format.dart';
@@ -11,35 +11,25 @@ import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class InfoPage extends StatefulWidget {
-  const InfoPage({Key? key, this.id = "123456789", this.token = ""})
-      : super(key: key);
-  final String? id;
-  final String token;
+  const InfoPage({Key? key}) : super(key: key);
+  // final String? id;
+  // final String token;
   @override
   _InfoPageState createState() => _InfoPageState();
 }
 
 class _InfoPageState extends State<InfoPage> {
-  String _keyword = 'inver';
-  int? sex = 2;
-  DateTime _selectedDate = DateTime.utc(2000, 1, 1);
+  String _keyword = Global.nickname;
+  int? sex = Global.gender;
+  DateTime _selectedDate = DateTime.utc(
+      int.parse(Global.birth.split('-')[0]),
+      int.parse(Global.birth.split('-')[1]),
+      int.parse(Global.birth.split('-')[2]));
 
-  Image _avatar = Image.asset('assets/images/tx.jpg');
-  String _avatarMsg = "";
-  String _infoMsg = "";
-  int _infoCode = -1;
-  late String _id = widget.id.toString();
-  late String _token = widget.token;
-  var _info = {};
-  // var _info = {};
-  int _birthY = 2000, _birthM = 1, _birthD = 1;
-
-  void init() async {
-    await _getAvatar();
-    await _getInfo();
-    if (_avatarMsg != "") {
+  void init() {
+    if (Global.avatarMsg != "") {
       Fluttertoast.showToast(
-          msg: _avatarMsg,
+          msg: Global.avatarMsg,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -47,104 +37,24 @@ class _InfoPageState extends State<InfoPage> {
           textColor: Colors.white,
           fontSize: 16.0);
     }
-    if (_infoMsg != "OK" || _infoCode == 2) {
+    if (Global.infoMsg != "") {
       Fluttertoast.showToast(
-          msg: _infoMsg,
+          msg: Global.infoMsg,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.black45,
           textColor: Colors.white,
           fontSize: 16.0);
-    }
-    // print(_avatarMsg);
-    // print(_infoMsg);
-    // print(_info);
-    if (_avatarMsg == "" && _infoMsg == "OK") {
-      print("**");
-      print(_info);
-      String _birth = (_info['data']['birth']);
-      _birthY = int.parse(_birth.split('-')[0]);
-      _birthM = int.parse(_birth.split('-')[1]);
-      _birthD = int.parse(_birth.split('-')[2]);
-      _selectedDate = DateTime.utc(_birthY, _birthM, _birthD);
-      sex = _info['data']['gender'];
-      _keyword = _info['data']['nickname'];
-      print(_selectedDate);
-      print(sex);
-      print(_keyword);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    // _getAvatar();
-    // _getInfo();
     init();
-    print(widget.id);
-    print(widget.token);
-  }
-
-  _getAvatar() async {
-    var httpClient = new HttpClient();
-    var url = new Uri.http('175.27.189.9', '/user/getAvatar', {'id': _id});
-    String result = "";
-    Image image = Image.asset('assets/images/tx.jpg');
-    var request = await httpClient.getUrl(url);
-    var response = await request.close();
-    if (response.statusCode == HttpStatus.ok) {
-      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      image = Image.memory(bytes);
-    } else {
-      result = 'Error:\nHttp status ${response.statusCode}';
-    }
-    if (!mounted) return;
-    setState(() {
-      _avatar = image;
-      _avatarMsg = result;
-    });
-  }
-
-  _getInfo() async {
-    var httpClient = new HttpClient();
-    var url = new Uri.http('175.27.189.9', '/user/getInfo', {'id': _id});
-    String result = "";
-    var data = {};
-    var code = -1;
-    // String token = "";
-    // Image image = Image.asset('assets/images/hxy.bmp');
-    // Image image;
-    // Uint8List _image;
-    var request = await httpClient.getUrl(url);
-    var response = await request.close();
-    // print('***');
-    // print(response.statusCode);
-    if (response.statusCode == HttpStatus.ok) {
-      // print('***');
-      // Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      // print(bytes);
-      // image = Image.memory(bytes);
-      var json = await utf8.decoder.bind(response).join();
-      data = jsonDecode(json);
-      code = data['code'];
-      result = data['msg'];
-      // result = data['msg'];
-      // token = data['data']['token'];
-      // print(result);
-      // print(data);
-      // print(token);
-      // return bytes;
-    } else {
-      result = 'Error:\nHttp status ${response.statusCode}';
-    }
-    if (!mounted) return;
-    setState(() {
-      _info = data;
-      _infoMsg = result;
-      _infoCode = code;
-    });
-    // return image;
+    print(Global.phoneNumber);
+    print(Global.token);
   }
 
   Future<void> _setDate() async {
@@ -212,18 +122,18 @@ class _InfoPageState extends State<InfoPage> {
               ),
               controller: TextEditingController.fromValue(
                 TextEditingValue(
-                  text: '${this._keyword}', //判断keyword是否为空
+                  text: '${_keyword}', //判断keyword是否为空
                   // 保持光标在最后
                   selection: TextSelection.fromPosition(
                     TextPosition(
                         affinity: TextAffinity.downstream,
-                        offset: '${this._keyword}'.length),
+                        offset: '${_keyword}'.length),
                   ),
                 ),
               ),
               onChanged: (String value) {
                 setState(() {
-                  this._keyword = value;
+                  _keyword = value;
                 });
               },
             ),
@@ -479,7 +389,7 @@ class _InfoPageState extends State<InfoPage> {
                       width: 80,
                       height: 80,
                       child: ClipOval(
-                        child: _avatar,
+                        child: Global.avatar,
                       ),
                     ),
                     // _divider(),

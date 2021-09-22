@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:startup_namer/Global.dart';
 import 'InfoPage.dart';
 import 'SetPage.dart';
 import 'TagPage.dart';
@@ -10,30 +11,29 @@ import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class PersonPage extends StatefulWidget {
-  const PersonPage({Key? key, this.id = "123456789", this.token = ""})
-      : super(key: key);
-  final String? id;
-  final String token;
+  const PersonPage({Key? key}) : super(key: key);
+  // final String? id;
+  // final String token;
   @override
   _PersonPageState createState() => _PersonPageState();
 }
 
 class _PersonPageState extends State<PersonPage> {
   // late Image _avatar;
-  Image _avatar = Image.asset('assets/images/tx.jpg');
-  String _avatarMsg = "";
-  late String _id = widget.id.toString().substring(7, 11);
-  late String _token = widget.token;
+  // Image _avatar = Image.asset('assets/images/tx.jpg');
+  // String _avatarMsg = "";
+  // late String _id = widget.id.toString().substring(7, 11);
+  // late String _token = widget.token;
 
   @override
   void initState() {
     super.initState();
-    print(widget.id);
-    print(widget.token);
-    _getAvatar();
-    if (_avatarMsg != "") {
+    print(Global.phoneNumber);
+    print(Global.token);
+    // _getAvatar();
+    if (Global.avatarMsg != "") {
       Fluttertoast.showToast(
-          msg: _avatarMsg,
+          msg: Global.avatarMsg,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -43,41 +43,36 @@ class _PersonPageState extends State<PersonPage> {
     }
   }
 
-  _getAvatar() async {
-    var httpClient = new HttpClient();
-    var url =
-        new Uri.http('175.27.189.9', '/user/getAvatar', {'id': widget.id});
-    String result = "";
-    Image image = Image.asset('assets/images/tx.jpg');
-    var request = await httpClient.getUrl(url);
-    var response = await request.close();
-    if (response.statusCode == HttpStatus.ok) {
-      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      // print(bytes);
-      if (bytes.isNotEmpty)
-        image = Image.memory(bytes);
-      else
-        result = 'Error';
-    } else {
-      result = 'Error:\nHttp status ${response.statusCode}';
-    }
-    if (!mounted) return;
-    setState(() {
-      _avatar = image;
-      _avatarMsg = result;
-    });
-  }
+  // _getAvatar() async {
+  //   var httpClient = new HttpClient();
+  //   var url = new Uri.http(
+  //       '175.27.189.9', '/user/getAvatar', {'id': Global.phoneNumber});
+  //   String result = "";
+  //   Image image = Image.asset('assets/images/tx.jpg');
+  //   var request = await httpClient.getUrl(url);
+  //   var response = await request.close();
+  //   if (response.statusCode == HttpStatus.ok) {
+  //     Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+  //     // print(bytes);
+  //     if (bytes.isNotEmpty)
+  //       image = Image.memory(bytes);
+  //     else
+  //       result = 'Error';
+  //   } else {
+  //     result = 'Error:\nHttp status ${response.statusCode}';
+  //   }
+  //   if (!mounted) return;
+  //   setState(() {
+  //     _avatar = image;
+  //     _avatarMsg = result;
+  //   });
+  // }
 
   Widget _infoField() {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => InfoPage(
-                      id: widget.id,
-                      token: _token,
-                    )));
+            context, MaterialPageRoute(builder: (context) => InfoPage()));
       },
       child: Container(
         margin: EdgeInsets.only(left: 40, right: 30),
@@ -87,7 +82,7 @@ class _PersonPageState extends State<PersonPage> {
               width: 70,
               height: 70,
               child: ClipOval(
-                child: _avatar,
+                child: Global.avatar,
               ),
             ),
             Container(
@@ -98,10 +93,10 @@ class _PersonPageState extends State<PersonPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   new Text(
-                    _id,
+                    Global.phoneNumber,
                     style: TextStyle(
                       color: Colors.grey.shade800,
-                      fontSize: 26.0,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

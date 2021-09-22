@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:startup_namer/Global.dart';
 import '../app.dart';
 import 'CertiPage.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -23,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   String? _passWord = "";
   int _code = -2;
   String _codeMsg = "";
-  String _token = "";
+  // String _token = "";
   @override
   void initState() {
     passwordVisible = false; //设置初始状态
@@ -202,13 +205,65 @@ class _LoginPageState extends State<LoginPage> {
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
-    // if (!mounted) return;
+    if (!mounted) return;
 
     setState(() {
+      Global.phoneNumber = _phoneNumber.toString();
       // _isCodeTrue = result;
-      _token = token;
+      Global.token = token;
     });
     return _code;
+  }
+
+  _getAvatar() async {
+    var httpClient = new HttpClient();
+    var url = new Uri.http(
+        '175.27.189.9', '/user/getAvatar', {'id': Global.phoneNumber});
+    String result = "";
+    Image image = Image.asset('assets/images/tx.jpg');
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+      image = Image.memory(bytes);
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      Global.avatar = image;
+      Global.avatarMsg = result;
+    });
+  }
+
+  _getInfo() async {
+    var httpClient = new HttpClient();
+    var url = new Uri.http(
+        '175.27.189.9', '/user/getInfo', {'id': Global.phoneNumber});
+    String result = "";
+    var data = {};
+    var code = -1;
+    var request = await httpClient.getUrl(url);
+    var response = await request.close();
+    if (response.statusCode == HttpStatus.ok) {
+      var json = await utf8.decoder.bind(response).join();
+      data = jsonDecode(json);
+      code = data['code'];
+      result = data['msg'];
+    } else {
+      result = 'Error:\nHttp status ${response.statusCode}';
+    }
+    if (!mounted) return;
+    setState(() {
+      if (code == 0) {
+        Global.birth = data['data']['birth'];
+        Global.gender = data['data']['gender'];
+        Global.nickname = data['data']['nickname'];
+        Global.tag = data['data']['tag'];
+      } else {
+        Global.infoMsg = result;
+      }
+    });
   }
 
   void _forSubmitted() async {
@@ -225,11 +280,10 @@ class _LoginPageState extends State<LoginPage> {
       if (_form1.validate() && _form2.validate()) {
         _code = await _getLogin();
         if (_code == 0) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ScaffoldRoute(
-                      index: 0, token: _token, id: _phoneNumber)));
+          _getAvatar();
+          _getInfo();
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ScaffoldRoute(index: 0)));
         } else if (_code == 1) {
           Fluttertoast.showToast(
               msg: "用户名或密码错误",

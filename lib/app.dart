@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:startup_namer/ContactPage/AddFriend.dart';
+import 'package:startup_namer/Global.dart';
 import 'MsgPage/MsgPage.dart';
 import 'ContactPage/ContactPage.dart';
 import 'LifePage/LifePage.dart';
@@ -11,12 +12,10 @@ import 'PersonPage/PersonPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ScaffoldRoute extends StatefulWidget {
-  ScaffoldRoute(
-      {Key? key, this.index = 0, this.id = "123456789", this.token = ""})
-      : super(key: key);
+  ScaffoldRoute({Key? key, this.index = 0}) : super(key: key);
   final int index;
-  final String? id;
-  final String token;
+  // final String? id;
+  // final String token;
   @override
   _ScaffoldRouteState createState() => new _ScaffoldRouteState();
 }
@@ -25,13 +24,13 @@ class _ScaffoldRouteState extends State<ScaffoldRoute> {
   @override
   void initState() {
     super.initState();
-    print(widget.id);
-    print(widget.token);
+    print(Global.phoneNumber);
+    print(Global.token);
   }
 
   late int _selectedIndex = widget.index;
-  late String? _id = widget.id;
-  late String _token = widget.token;
+  // String _id = Global.phoneNumber;
+  // String _token = Global.token;
   final List<BottomNavigationBarItem> bottomNavItems = [
     BottomNavigationBarItem(
       icon: Icon(Icons.textsms),
@@ -71,12 +70,7 @@ class _ScaffoldRouteState extends State<ScaffoldRoute> {
     ),
   ];
 
-  late final pages = [
-    MsgPage(),
-    ContactPage(),
-    LifePage(),
-    PersonPage(id: _id, token: _token)
-  ];
+  final pages = [MsgPage(), ContactPage(), LifePage(), PersonPage()];
   final titles = ["Messages", "Contacts", "Life", "Me"];
   // final titles = [Text("Messages"), Text("Contacts"), Text("Life"), Text("Me")];
 
