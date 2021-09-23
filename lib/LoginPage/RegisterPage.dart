@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _ackCode = "";
   String? _passWord = "";
   String? _ackPassWord = "";
-  String? _codeMsg = "";
+  String _codeMsg = "";
   // String _token = "";
   String _passCodeMsg = "";
   int _passCode = -2;
