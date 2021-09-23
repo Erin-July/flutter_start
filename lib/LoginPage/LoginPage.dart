@@ -260,6 +260,7 @@ class _LoginPageState extends State<LoginPage> {
         Global.gender = data['data']['gender'];
         Global.nickname = data['data']['nickname'];
         Global.tag = data['data']['tag'];
+        Global.school = data['data']['school'];
       } else {
         Global.infoMsg = result;
       }

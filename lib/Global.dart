@@ -8,6 +8,7 @@ class Global {
   static int gender = 2;
   static String nickname = "******";
   static String tag = "";
+  static String school = "";
 
   //ErrorMsg
   static String avatarMsg = "";

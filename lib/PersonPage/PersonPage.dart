@@ -28,7 +28,7 @@ class _PersonPageState extends State<PersonPage> {
   @override
   void initState() {
     super.initState();
-    print(Global.phoneNumber);
+    print(Global.nickname);
     print(Global.token);
     // _getAvatar();
     if (Global.avatarMsg != "") {
@@ -72,7 +72,12 @@ class _PersonPageState extends State<PersonPage> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => InfoPage()));
+                context, MaterialPageRoute(builder: (context) => InfoPage()))
+            .then((nickname) {
+          setState(() {
+            Global.nickname = nickname;
+          });
+        });
       },
       child: Container(
         margin: EdgeInsets.only(left: 40, right: 30),
@@ -93,7 +98,7 @@ class _PersonPageState extends State<PersonPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   new Text(
-                    Global.phoneNumber,
+                    Global.nickname,
                     style: TextStyle(
                       color: Colors.grey.shade800,
                       fontSize: 20.0,

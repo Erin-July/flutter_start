@@ -7,6 +7,8 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:crypto/crypto.dart';
+import 'package:convert/convert.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -21,6 +23,9 @@ class InfoPage extends StatefulWidget {
 class _InfoPageState extends State<InfoPage> {
   String _keyword = Global.nickname;
   int? sex = Global.gender;
+  int _setInfoCode = -1;
+  String _setInfoCodeMsg = "";
+
   DateTime _selectedDate = DateTime.utc(
       int.parse(Global.birth.split('-')[0]),
       int.parse(Global.birth.split('-')[1]),
@@ -318,9 +323,104 @@ class _InfoPageState extends State<InfoPage> {
     );
   }
 
+  String generate_MD5(String data) {
+    var content = new Utf8Encoder().convert(data);
+    var digest = md5.convert(content);
+    // 这里其实就是 digest.toString()
+    return hex.encode(digest.bytes);
+  }
+
+  _postSetInfo() async {
+    print('_token:' + Global.token);
+    var timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    var httpClient = new HttpClient();
+    var newToken = generate_MD5(timestamp.toString() + Global.token);
+    var url = new Uri.http('175.27.189.9', '/user/setInfo');
+    var request = await httpClient.postUrl(url);
+
+    String msg = "";
+    int code = -2;
+    // int _code = 1;
+
+    String queryString = Uri(queryParameters: {
+      'id': Global.phoneNumber,
+      'timestamp': timestamp.toString(),
+      'token': newToken,
+      'birth': formatDate(_selectedDate, [
+        yyyy,
+        '-',
+        mm,
+        '-',
+        dd,
+      ]),
+      'nickname': _keyword,
+      'gender': sex.toString(),
+      'school': Global.school,
+    }).query;
+
+    print(queryString);
+    request.headers.add("content-type", "application/x-www-form-urlencoded");
+    request.write(queryString);
+    var response = await request.close();
+    // print(response.statusCode);
+    if (response.statusCode == HttpStatus.ok) {
+      var json = await utf8.decoder.bind(response).join();
+      var data = jsonDecode(json);
+      code = data['code'];
+      msg = data['msg'];
+      print(data);
+    } else {
+      msg = 'Error:\nHttp status ${response.statusCode}';
+    }
+
+    // If the widget was removed from the tree while the message was in flight,
+    // we want to discard the reply rather than calling setState to update our
+    // non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _setInfoCode = code;
+      _setInfoCodeMsg = msg;
+    });
+  }
+
   Widget _submitButton() {
     return InkWell(
-      onTap: () {},
+      onTap: () async {
+        await _postSetInfo();
+        print(_setInfoCode);
+        if (_setInfoCode == 0) {
+          Global.birth = formatDate(_selectedDate, [
+            yyyy,
+            '-',
+            mm,
+            '-',
+            dd,
+          ]);
+          Global.nickname = _keyword;
+          Global.gender = int.parse(sex.toString());
+          Fluttertoast.showToast(
+              msg: "修改成功",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black45,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          Future.delayed(Duration(milliseconds: 1000), () {
+            Navigator.of(context).pop(_keyword);
+          });
+        } else {
+          Fluttertoast.showToast(
+              msg: _setInfoCodeMsg,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black45,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+      },
       child: Container(
         // width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(vertical: 15),
@@ -366,13 +466,13 @@ class _InfoPageState extends State<InfoPage> {
         centerTitle: true,
         backgroundColor: Color.fromRGBO(117, 204, 164, 1),
         elevation: 2,
-        // leading: IconButton(
-        //   icon: Icon(
-        //     Icons.arrow_back_ios,
-        //     color: Colors.white,
-        //   ),
-        //   onPressed: () => Navigator.of(context).pop(),
-        // ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.of(context).pop(Global.nickname),
+        ),
       ),
       body: Container(
         child: Stack(
