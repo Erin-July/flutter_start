@@ -1,6 +1,7 @@
 import 'PinPage.dart';
-import 'hotList.dart';
+
 import 'package:flutter/material.dart';
+import 'Sliver.dart';
 
 class LifePage extends StatelessWidget {
   @override
@@ -61,12 +62,11 @@ class LifePage extends StatelessWidget {
                   trailing: Icon(Icons.chevron_right),
                   // 点击事件
                   onTap: () {
-                    // Navigator.push(
-                    //    context,
-                    //  MaterialPageRoute(
-                    // //    builder:(context)=>new BottomNavigation()
-                    //  )
-                    //);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                new CustomSliverHeaderDemo()));
                   },
                   // 长按事件
                   onLongPress: () {
@@ -98,12 +98,11 @@ class LifePage extends StatelessWidget {
                   trailing: Icon(Icons.chevron_right),
                   // 点击事件
                   onTap: () {
-                    // Navigator.push(
-                    //    context,
-                    //  MaterialPageRoute(
-                    // //    builder:(context)=>new BottomNavigation()
-                    //  )
-                    //);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                new CustomSliverHeaderDemo()));
                   },
                   // 长按事件
                   onLongPress: () {

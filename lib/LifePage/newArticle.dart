@@ -12,10 +12,14 @@ class newArticle extends StatelessWidget {
           backgroundColor: Color.fromRGBO(248, 246, 241, 1),
           appBar: AppBar(
             //顶部导航栏
+            elevation: 3,
+            leading:   IconButton(icon:Icon (Icons.arrow_back_ios),
+                onPressed: () => Navigator.pop(context),
+),
             title: Text('发个拼拼，吃个桃桃'),
             centerTitle: true,
             backgroundColor: Color.fromRGBO(117, 204, 164, 1),
-            elevation: 2,
+
           ),
           body: Column(children: [
             Container(

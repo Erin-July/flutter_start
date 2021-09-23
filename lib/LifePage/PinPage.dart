@@ -1,20 +1,13 @@
 // import 'dart:html';
 
 import 'dart:ffi';
+import 'Sliver.dart';
 
 import 'newArticle.dart';
-import 'textDetail.dart';
 import 'package:flutter/material.dart';
 import 'fuckq.dart';
 
 import 'SearchPin.dart';
-import 'package:flutter/material.dart';
-import '../MsgPage/MsgPage.dart';
-import '../ContactPage/ContactPage.dart';
-import '../LifePage/LifePage.dart';
-import '../PersonPage/PersonPage.dart';
-import '../ContactPage/AddFriend.dart';
-import 'hotList.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
@@ -98,8 +91,10 @@ class PinPage extends StatelessWidget {
       child: new TextButton(
           onPressed: () {
             print('111');
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => new textDetail()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => new CustomSliverHeaderDemo()));
           },
           child: new Container(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),

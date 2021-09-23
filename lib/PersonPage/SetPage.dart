@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:startup_namer/Global.dart';
 import '../LoginPage/LoginPage.dart';
 
 class SetPage extends StatefulWidget {
@@ -104,7 +105,7 @@ class _SetPageState extends State<SetPage> {
             ),
             Spacer(),
             Text(
-              '黄*雨',
+              '海*棠',
               style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
             ),
             Container(
@@ -182,7 +183,7 @@ class _SetPageState extends State<SetPage> {
             ),
             Spacer(),
             Text(
-              '18822197739',
+              Global.phoneNumber,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
             ),
             Container(
