@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'NewFriends.dart';
+import 'SearchResult.dart';
 import 'component/SearchField.dart';
 import 'component/contact_sider_list.dart';
 import 'component/contact_item.dart';
@@ -13,7 +14,7 @@ class ContactPage extends StatefulWidget {
 }
 
 class ContactPageState extends State<ContactPage> {
-  final items = new List<String>.generate(100, (i) => "Item $i");
+  // final items = new List<String>.generate(100, (i) => "Item $i");
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +27,9 @@ class ContactPageState extends State<ContactPage> {
                 height: 55,
                 width: 400,
                 color: Color.fromRGBO(248, 246, 241, 1),
-                child: SearchWidget()),
+                child: SearchWidget(SearchResult())),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Container(
                   child: new ListTile(
                 title: Text("新朋友"),
@@ -41,10 +42,10 @@ class ContactPageState extends State<ContactPage> {
               )),
             ),
             Expanded(
-                flex: 1,
+                flex: 3,
                 child: ButtonBar(
                   alignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
+                  // mainAxisSize: MainAxisSize.max,
                   children: [
                     ///****************To Do***************///
                     TextButton(onPressed: () {}, child: Text('好友')),
@@ -52,7 +53,7 @@ class ContactPageState extends State<ContactPage> {
                   ],
                 )),
             Expanded(
-                flex: 8,
+                flex: 18,
                 child: Scaffold(
                     body: ContactSiderList(
                   //好友列表

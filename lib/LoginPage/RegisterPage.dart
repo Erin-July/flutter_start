@@ -575,7 +575,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _forSubmitted() async {
+  _forSubmitted() async {
     // var _form1 = _formKey1.currentState;
     var _form2 = _formKey2.currentState;
     var _form3 = _formKey3.currentState;
@@ -639,9 +639,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _submitButton() {
     return InkWell(
-      onTap: () {
+      onTap: () async {
         // _codeSubmitted();
-        _forSubmitted();
+        await _forSubmitted();
         // Navigator.push(
         //     context,
         //     MaterialPageRoute(

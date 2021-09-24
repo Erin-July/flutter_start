@@ -17,10 +17,15 @@ class AddFriendState extends State<SearchPin>{
           backgroundColor: Color.fromRGBO(248, 246, 241, 1),
           appBar: AppBar(
             //顶部导航栏
+            elevation: 3,
+            leading:   IconButton(icon:Icon (Icons.arrow_back_ios),
+              onPressed: () => Navigator.pop(context),
+            ),
+            //顶部导航栏
             title: Text('拼拼搜索'),
             centerTitle: true,
             backgroundColor: Color.fromRGBO(117, 204, 164, 1),
-            elevation: 2,
+
           ),
           body: Container(
             height: 60,

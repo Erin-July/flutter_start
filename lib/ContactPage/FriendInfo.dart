@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class FriendInfo extends StatefulWidget {
   const FriendInfo({Key? key}) : super(key: key);
 
@@ -119,34 +118,48 @@ class FriendInfoState extends State<FriendInfo> {
   @override
   Widget build(BuildContext context) {
     // return Container();
-    return Container(
-      child: Stack(
-        children: <Widget>[
-          Container(
-            // padding: EdgeInsets.symmetric(horizontal: 40),
-            margin: EdgeInsets.symmetric(vertical: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  _infoField(),
-                  _divider(),
-                  _tagField(),
-                  _divider(),
-                  TextButton(onPressed: () {}, child: Text('发消息')),
-                  TextButton(onPressed: () {}, child: Text('删除好友')),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          // appBar: AppBar(
+          //   //返回上一页
+          //   leading: IconButton(
+          //       icon: Icon(Icons.arrow_back),
+          //       onPressed: () {
+          //         Navigator.pop(context);
+          //       }),
+          //   title: Text('addFriend'),
+          //   centerTitle: true,
+          //   backgroundColor: Color.fromRGBO(117, 204, 164, 1),
+          //   elevation: 2,
+          // ),
+          body: Column(
+            children: <Widget>[
+              Container(
+                // padding: EdgeInsets.symmetric(horizontal: 40),
+                margin: EdgeInsets.symmetric(vertical: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _infoField(),
+                      _divider(),
+                      _tagField(),
+                      _divider(),
+                      TextButton(onPressed: () {}, child: Text('发消息')),
+                      TextButton(onPressed: () {}, child: Text('删除好友')),
+                      IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

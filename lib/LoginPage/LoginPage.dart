@@ -391,6 +391,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Color.fromRGBO(248, 246, 241, 1),
         body: Container(
           padding: EdgeInsets.symmetric(horizontal: 40),
+          // margin: EdgeInsets.symmetric(vertical: 20),
           child: SingleChildScrollView(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

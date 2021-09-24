@@ -7,6 +7,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/qdy" />
+            android:src="@mipmap/qdy233" />
     </item>
 </layer-list>
